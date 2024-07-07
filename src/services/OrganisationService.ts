@@ -76,7 +76,6 @@ async function HandleGetOrganisation(orgId, userDetails) {
 }
 async function HandleGetOrganisations(userDetails) {
   try {
-    console.log(userDetails);
     const userOrganisations = await prisma.userOrganisations.findMany({
       where: {
         authorId: userDetails.userId,

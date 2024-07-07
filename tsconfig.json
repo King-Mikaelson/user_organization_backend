@@ -18,7 +18,8 @@
     "src/index.ts", // Main entry point
     "src/controllers/**/*.ts", // Controllers folder
     "src/services/**/*.ts", // Services folder
-    "src/routes/**/*.ts" // Routes folder
+    "src/routes/**/*.ts", // Routes folder
+    "tests"
   ],
     "exclude": ["node_modules", "**/*.spec.ts"]
   }

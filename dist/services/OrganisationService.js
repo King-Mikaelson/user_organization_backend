@@ -69,7 +69,6 @@ function HandleGetOrganisation(orgId) {
 function HandleGetOrganisations(userDetails) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(userDetails);
             const userOrganisations = yield prisma.userOrganisations.findMany({
                 where: {
                     authorId: userDetails.userId,

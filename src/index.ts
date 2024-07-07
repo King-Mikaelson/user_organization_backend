@@ -7,9 +7,9 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// import { fileURLToPath } from "url";
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 import authRoutes from "./routes/authRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
 import organisationRoutes from "./routes/organisationRoutes.ts";
@@ -20,13 +20,13 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Use the router
-app.use(`/api/${process.env.API_VERSION}/auth`, authRoutes);
-app.use(`/api/${process.env.API_VERSION}/users`, userRoutes);
-app.use(`/api/${process.env.API_VERSION}/organisations`, organisationRoutes);
+app.use(`/auth`, authRoutes);
+app.use(`/users`, userRoutes);
+app.use(`/organisations`, organisationRoutes);
 
 /**
  * app.[method]([route], [route handler])
@@ -35,7 +35,11 @@ app.get("/", (req, res) => {
   res.send("Hello, Vercel!");
 });
 
+app.get("/", (req, res) => res.send("Hello World!"));
+
 // creates and starts a server for our API on a defined port
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+export { app };

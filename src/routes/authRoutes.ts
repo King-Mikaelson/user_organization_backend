@@ -1,6 +1,6 @@
 import express from "express";
 import * as authorizationMiddleware from "../middleware/AuthorizationMiddleware.ts";
-import { check, cookie } from "express-validator";
+import { body, check, cookie } from "express-validator";
 import * as authController from "../controllers/AuthController.ts";
 
 const router = express.Router();
@@ -8,15 +8,16 @@ const router = express.Router();
 router.post(
   "/login",
   [
-    check("email")
+    body("email")
       .notEmpty()
-      .withMessage("email is required")
+      .withMessage("Email is required")
       .isEmail()
-      .withMessage("email is not valid"),
-    check("password")
+      .withMessage("Email is not valid"),
+    body("password")
       .notEmpty()
-      .isLength({ min: 11 })
-      .withMessage("Password length must be at least 11"),
+      .withMessage("Password is required")
+      .isLength({ min: 5 })
+      .withMessage("Password length must be at least 5"),
   ],
   async (req, res) => {
     await authController.login(req, res);
@@ -26,27 +27,31 @@ router.post(
 router.post(
   "/register",
   [
-    check("firstName").notEmpty().withMessage("firstName is required."),
-    check("lastName").notEmpty().withMessage("lastName is required."),
-    check("phone").notEmpty().withMessage("phone is required."),
-    check("password")
+    body("firstName").notEmpty().withMessage("First name is required"),
+    body("lastName").notEmpty().withMessage("Last name is required"),
+    body("phone").notEmpty().withMessage("Phone number is required."),
+    body("password")
       .notEmpty()
-      .isLength({ min: 11 })
-      .withMessage("password length must be at least 11"),
-    check("email")
+      .withMessage("Password is required")
+      .isLength({ min: 5 })
+      .withMessage("Password length must be at least 5"),
+    body("email")
       .notEmpty()
-      .withMessage("email is required")
+      .withMessage("Email is required")
       .isEmail()
-      .withMessage("email is not valid"),
+      .withMessage("Email is not valid"),
   ],
   async (req, res) => {
     await authController.signUp(req, res);
   }
 );
 
-
-router.post("/logout", [], async (req, res) => {
-  await authController.logout(req, res);
+router.get("/logout", [], async (req, res) => {
+  res.status(200).json({
+    status: 200,
+    message: "USER_CREATED",
+    data: "user",
+  });
 });
 
 export default router;
