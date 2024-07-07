@@ -34,7 +34,7 @@ async function HandleCreateOrganisation(name: string, description: string) {
   }
 }
 
-async function HandleGetOrganisation(orgId) {
+async function HandleGetOrganisation(orgId, userDetails) {
   try {
     const organisation = await prisma.organisation.findUnique({
       where: {
@@ -47,6 +47,21 @@ async function HandleGetOrganisation(orgId) {
         message: "Organisation Does Not Exist",
         statusCode: 404,
         status: "Not Found",
+      };
+    }
+
+    const userOrganisations = await prisma.userOrganisations.findFirst({
+      where: {
+        authorId: userDetails.userId,
+        organisationId:orgId
+      },
+    });
+
+    if (!userOrganisations) {
+      throw {
+        status: "Bad request",
+        message: "No organisations found for the user",
+        statusCode: 404,
       };
     }
 
@@ -118,8 +133,23 @@ async function HandleAddNewMember(orgId, userId) {
     if (!organisation) {
       throw {
         message: "Organisation Does Not Exist",
-        statusCode: 404,
+        code: 404,
         status: "Not Found",
+      };
+    }
+
+    const userOrganisations = await prisma.userOrganisations.findFirst({
+      where: {
+        authorId: user.userId,
+        organisationId:orgId
+      },
+    });
+
+    if (userOrganisations) {
+      throw {
+        status: "Conflict",
+        message: "User already belongs to organization",
+        code: config.HTTP_CODES.CONFLICT,
       };
     }
 
@@ -142,7 +172,7 @@ async function HandleAddNewMember(orgId, userId) {
   } catch (error) {
     throw {
       message: error.message,
-      statusCode: error.code,
+      code: error.code,
       status: error.status,
     };
   }

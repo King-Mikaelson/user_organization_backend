@@ -1,12 +1,12 @@
 import config from "../config.ts";
 import * as ExpressValidatorHelper from "../helpers/ExpressValidatorHelper.ts";
-import * as userService from "../services/UserService.ts";
+import * as authService from "../services/AuthService.ts";
 async function signUp(req, res) {
   try {
     await ExpressValidatorHelper.resolveMessageWithResponse(req, res);
 
     const { email, password, firstName, lastName, phone } = req.body;
-    const user = await userService.HandleCreateUser(
+    const user = await authService.HandleCreateUser(
       email,
       password,
       firstName,
@@ -19,10 +19,14 @@ async function signUp(req, res) {
       data: user,
     });
   } catch (error) {
-    res.status(error.code).json({
+    res.status(error.statusCode ? error.statusCode : error.code).json({
       ...(error.status ? { status: error.status } : {}),
       ...(error.errors ? { errors: error.errors } : { message: error.message }),
-      code: error.code,
+      ...(error.errors
+        ? {}
+        : error.statusCode
+        ? { statusCode: error.statusCode }
+        : { code: error.code }),
     });
   }
 }
@@ -33,7 +37,7 @@ async function login(req, res) {
     const { email, password } = req.body;
 
     // Authenticate the user and get the token
-    const user = await userService.HandleLogin(email, password);
+    const user = await authService.HandleLogin(email, password);
 
     res.status(200).json({
       status: config.RESPONSE_MESSAGES.SUCCESS,
@@ -41,10 +45,12 @@ async function login(req, res) {
       data: user,
     });
   } catch (error) {
-    res.status(error.code).json({
+    res.status(error.statusCode ? error.statusCode : error.code).json({
       ...(error.status ? { status: error.status } : {}),
       ...(error.errors ? { errors: error.errors } : { message: error.message }),
-      ...(error.statusCode
+      ...(error.errors
+        ? {}
+        : error.statusCode
         ? { statusCode: error.statusCode }
         : { code: error.code }),
     });
@@ -55,4 +61,4 @@ async function login(req, res) {
 async function logout(req, res) {}
 
 
-export { signUp, login,  logout,  };
+export { signUp, login,  logout};

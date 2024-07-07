@@ -1,14 +1,9 @@
-import process from "process";
 import config from "../config.ts";
 import * as toolbox from "../utilities/ToolBoxUtility.ts";
-import jwt from "jsonwebtoken";
-import { promisify } from "util";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 const saltRounds = 10;
-const jwtVerifyAsync = promisify(jwt.verify);
-
 const prisma = new PrismaClient();
 
 async function hashPassword(password) {
@@ -31,42 +26,11 @@ async function HandleCreateUser(email, password, firstName, lastName, phone) {
         email: email,
       },
     });
-    // const organization = await prisma.organisation.findFirst({
-    //   where: {
-    //     name: orgName,
-    //   },
-    // });
 
-    // if (user) {
-    //   await prisma.userOrganisations.delete({
-    //     where: {
-    //       authorId_organisationId: {
-    //         authorId: user.userId,
-    //         organisationId: organization.id,
-    //       },
-    //     },
-    //   });
-    // }
-
-    // if (user) {
-    //   await prisma.user.delete({
-    //     where: {
-    //       email,
-    //     },
-    //   });
-    // }
-
-    // if (organization) {
-    //   await prisma.organisation.delete({
-    //     where: {
-    //       id: organization.id,
-    //     },
-    //   });
-    // }
     if (user) {
       throw {
         message: "Registration unsuccessful",
-        code: config.HTTP_CODES.BAD_REQUEST || 400,
+        statusCode: config.HTTP_CODES.BAD_REQUEST || 400,
         status: "Bad request",
       };
     }
@@ -97,20 +61,18 @@ async function HandleCreateUser(email, password, firstName, lastName, phone) {
     if (!savedUser) {
       throw {
         message: "Registration unsuccessful",
-        code: config.HTTP_CODES.BAD_REQUEST || 400,
+        statusCode: config.HTTP_CODES.BAD_REQUEST || 400,
         status: "Bad request",
       };
     }
 
     const accessToken = await toolbox.generateAccessToken(savedUser);
-
+    delete savedUser.password
     return { accessToken, user: savedUser };
   } catch (error) {
     throw {
       message: error.message,
-      code: error.code
-        ? error.code
-        : config.HTTP_CODES.INTERNAL_SERVER_ERROR || 500,
+      statusCode: error.statusCode,
       status: error.status,
     };
   }
@@ -143,7 +105,7 @@ async function HandleLogin(email, password) {
     }
 
     const accessToken = await toolbox.generateAccessToken(user);
-
+    delete user.password
     return { accessToken, user };
   } catch (error) {
     throw {
@@ -153,58 +115,6 @@ async function HandleLogin(email, password) {
     };
   }
 }
-async function HandleRefreshToken(token) {
-  try {
-    if (!token) {
-      throw {
-        message: config.RESPONSE_MESSAGES.NO_REFRESH_TOKEN,
-        code: config.HTTP_CODES.BAD_REQUEST,
-      };
-    }
 
-    const existingToken = await this.userRepository.getRefreshToken({
-      token: token,
-    });
 
-    if (!existingToken) {
-      throw {
-        message: config.RESPONSE_MESSAGES.INVALID_REFRESH_TOKEN,
-        code: config.HTTP_CODES.BAD_REQUEST,
-      };
-    }
-
-    const decoded = await jwtVerifyAsync(token, process.env.SECRET_KEY);
-
-    const user = await this.userRepository.getUserById(decoded.user._id);
-
-    if (!user) {
-      throw {
-        message: config.RESPONSE_MESSAGES.USER_NOT_FOUND,
-        code: config.HTTP_CODES.NOT_FOUND || 404,
-      };
-    }
-
-    const accessToken = await toolbox.generateAccessToken(user);
-    const refreshToken = await toolbox.generateRefreshToken(user);
-
-    // Delete any existing refresh tokens for this user
-    await this.userRepository.deleteRefreshTokens({ userId: user._id });
-
-    await this.userRepository.storeRefreshToken({
-      token: refreshToken,
-      userId: user._id,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw {
-      message: error.message,
-      code: error.code
-        ? error.code
-        : config.HTTP_CODES.INTERNAL_SERVER_ERROR || 500,
-    };
-  }
-}
-
-export { HandleCreateUser, HandleLogin, HandleRefreshToken };
+export { HandleCreateUser, HandleLogin };

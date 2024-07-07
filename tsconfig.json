@@ -13,7 +13,13 @@
     "ts-node": {
         "esm": true, 
       },
-    "include": ["src/**/*"],
+    // "include": ["src/**/*"],
+    "include": [
+    "src/index.ts", // Main entry point
+    "src/controllers/**/*.ts", // Controllers folder
+    "src/services/**/*.ts", // Services folder
+    "src/routes/**/*.ts" // Routes folder
+  ],
     "exclude": ["node_modules", "**/*.spec.ts"]
   }
   

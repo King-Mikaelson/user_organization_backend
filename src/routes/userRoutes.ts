@@ -7,12 +7,12 @@ const router = express.Router();
 
 
 router.get(
-  "/organisations/:id",
+  "/:id",
   [
     authorizationMiddleware.authorize(),
     param("id")
       .notEmpty()
-      .withMessage("orgId is required")
+      .withMessage("userId is required")
   ],
   async (req, res) => {
     await userController.getUser(req, res);

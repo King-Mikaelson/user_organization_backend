@@ -44,7 +44,9 @@ async function addNewMember(req, res) {
     res.status(error.statusCode ? error.statusCode : error.code).json({
       ...(error.status ? { status: error.status } : {}),
       ...(error.errors ? { errors: error.errors } : { message: error.message }),
-      ...(error.statusCode
+      ...(error.errors
+        ? {}
+        : error.statusCode
         ? { statusCode: error.statusCode }
         : { code: error.code }),
     });
@@ -82,7 +84,8 @@ async function getOrganisation(req, res) {
     await ExpressValidatorHelper.resolveMessageWithResponse(req, res);
 
     const { orgId } = req.params;
-    const organisation = await organisationService.HandleGetOrganisation(orgId);
+    const userDetails = req.user;
+    const organisation = await organisationService.HandleGetOrganisation(orgId, userDetails);
     res.status(200).json({
       status: config.RESPONSE_MESSAGES.SUCCESS,
       message: "Organisation successfully fetched",
