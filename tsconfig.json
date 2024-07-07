@@ -8,8 +8,8 @@
       "strict": false,
      "esModuleInterop": true,
       "skipLibCheck": true,
-      "allowImportingTsExtensions":true,
-      "noEmit": true
+      "allowImportingTsExtensions":true
+      
     },
     "ts-node": {
         "esm": true, 
