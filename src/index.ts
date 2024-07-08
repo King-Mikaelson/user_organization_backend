@@ -35,7 +35,6 @@ app.get("/api", (req, res) => {
   res.send("Hello, Vercel!");
 });
 
-app.get("/", (req, res) => res.send("Hello World!"));
 
 // creates and starts a server for our API on a defined port
 app.listen(port, () => {
