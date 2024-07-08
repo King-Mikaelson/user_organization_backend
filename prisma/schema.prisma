@@ -27,7 +27,7 @@ model User {
 model Organisation {
   orgId       String              @id @default(uuid()) @unique
   name        String 
-  description String
+  description String?
   users       UserOrganisations[]
 }
 

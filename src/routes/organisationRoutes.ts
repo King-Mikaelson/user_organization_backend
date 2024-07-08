@@ -10,7 +10,6 @@ router.post(
   [
     authorizationMiddleware.authorize(),
     check("name").notEmpty().withMessage("name is required"),
-    check("description").notEmpty().withMessage("description is required"),
   ],
   async (req, res) => {
     await organisationController.createOrganisation(req, res);
