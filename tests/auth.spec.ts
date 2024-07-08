@@ -46,7 +46,9 @@ describe("Token Generation", () => {
 
   it("should return null for invalid token", async () => {
     const mockVerify = jwt.verify as jest.Mock;
-    mockVerify.mockReturnValue(null);
+    mockVerify.mockImplementation(() => {
+      throw new Error("Invalid token");
+    });
 
     const decoded = await verifyToken("mockToken", process.env.SECRET_KEY);
 
