@@ -31,7 +31,7 @@ app.use(`/organisations`, organisationRoutes);
 /**
  * app.[method]([route], [route handler])
  */
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello, Vercel!");
 });
 
