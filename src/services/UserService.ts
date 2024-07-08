@@ -15,7 +15,7 @@ async function HandleGetUser(id, userDetails) {
     if (!user) {
       throw {
         message: "User Not Found",
-        statusCode: config.HTTP_CODES.NOT_FOUND || 404,
+        statusCode: 403,
         status: "Bad request",
       };
     }
