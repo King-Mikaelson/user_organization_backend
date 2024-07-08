@@ -29,7 +29,6 @@ router.post(
   [
     body("firstName").notEmpty().withMessage("First name is required"),
     body("lastName").notEmpty().withMessage("Last name is required"),
-    body("phone").notEmpty().withMessage("Phone number is required."),
     body("password")
       .notEmpty()
       .withMessage("Password is required")
