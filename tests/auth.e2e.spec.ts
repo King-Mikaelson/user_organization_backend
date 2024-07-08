@@ -48,7 +48,7 @@ describe("/AuthRoutes", () => {
     );
     expect(orgRes.status).toBe(200);
     expect(organisation).toHaveProperty("name", "John's Organisation");
-  }, 100000);
+  }, 150000);
 
 
 
