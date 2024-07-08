@@ -24,9 +24,9 @@ app.use(cookieParser());
 app.use(cors());
 
 // Use the router
-app.use(`/api/auth`, authRoutes);
-app.use(`/api/users`, userRoutes);
-app.use(`/api/organisations`, organisationRoutes);
+app.use(`/auth`, authRoutes);
+app.use(`/users`, userRoutes);
+app.use(`/organisations`, organisationRoutes);
 
 /**
  * app.[method]([route], [route handler])

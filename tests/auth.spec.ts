@@ -3,15 +3,7 @@ import {
   generateAccessToken,
   verifyToken,
 } from "../src/utilities/ToolBoxUtility.ts"; // Adjust the import based on your setup
-import {
-  createUser,
-  createOrganisation,
-  getUserOrganisation,
-} from "../function_without_contexts.ts";
 import { prismaMock } from "../singleton.ts";
-
-import { SimplifiedUser, SimplifiedOrganisation } from "../types.ts";
-
 import { v4 as uuidv4 } from "uuid";
 
 jest.mock("jsonwebtoken");
