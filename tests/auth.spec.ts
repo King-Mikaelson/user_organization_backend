@@ -101,7 +101,7 @@ describe("Organisation Access", () => {
     });
 
     // Mock organisation creation
-    (prismaMock.organisation as any).organisation.create.mockResolvedValue(
+    (prismaMock.organisation as any).create.mockResolvedValue(
       organisation as SimplifiedOrganisation
     );
 
@@ -111,20 +111,29 @@ describe("Organisation Access", () => {
       description: "Test Description",
     });
 
+    
+
+    const org = await (prismaMock.organisation as any).create({
+      data: { name: "Test Organisation", description: "New Organization" },
+    });
+
+
     // Mock finding user organisations
     (
       prismaMock.userOrganisations as any
-    ).userOrganisations.findMany.mockResolvedValueOnce([]);
-
-    const org = await (prismaMock.organisation as any).organisation.create({
-      data: { name: "Test Organisation", description: "New Organization" },
+    ).findMany.mockResolvedValue({
+      userId: user.userId,
+      orgId: org.orgId
     });
 
     const res = await (
       prismaMock.userOrganisations as any
-    ).userOrganisations.findMany({
+    ).findMany({
       where: { authorId: user.userId, organisationId: org.orgId },
     });
+
+    console.log(res)
+
 
     expect(res.length).toBe(0);
   });

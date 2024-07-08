@@ -31,7 +31,7 @@ interface userOrganisation {
 }
 
 export async function getUserOrganisation(user: userOrganisation) {
-  return await prisma.userOrganisations.findFirst({
+  return await prisma.userOrganisations.findMany({
     where: { authorId: user.userId, organisationId: user.orgId },
   });
 }
