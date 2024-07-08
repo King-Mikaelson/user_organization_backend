@@ -49,7 +49,7 @@ router.post(
 router.get("/logout", [], async (req, res) => {
   res.status(200).json({
     status: 200,
-    message: "USER_CREATED",
+    message: "USER_LOGGED_OUT",
     data: "user",
   });
 });
