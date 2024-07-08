@@ -40,8 +40,11 @@ describe("/AuthRoutes", () => {
     expect(registerRes.body.data).toHaveProperty("accessToken");
 
     let orgRes = await request(app)
-      .get(`/organisations`)
+      .get(`/api/organisations`)
       .set("Authorization", `Bearer ${registerRes.body.data.accessToken}`);
+
+      console.log(orgRes.body.data)
+
     let organisation = orgRes.body.data.organisations.find(
       (data) => data.name === "John's Organisation"
     );
