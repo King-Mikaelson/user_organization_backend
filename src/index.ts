@@ -25,13 +25,13 @@ app.use(cors());
 
 // Use the router
 app.use(`/auth`, authRoutes);
-app.use(`/users`, userRoutes);
-app.use(`/organisations`, organisationRoutes);
+app.use(`/api/users`, userRoutes);
+app.use(`/api/organisations`, organisationRoutes);
 
 /**
  * app.[method]([route], [route handler])
  */
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello, Vercel!");
 });
 
