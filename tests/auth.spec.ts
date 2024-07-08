@@ -4,7 +4,6 @@ import {
   generateAccessToken,
   verifyToken,
 } from "../src/utilities/ToolBoxUtility.ts"; // Adjust the import based on your setup
-import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
