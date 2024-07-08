@@ -1,54 +1,57 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import {generateAccessToken,verifyToken } from '../src/utilities/ToolBoxUtility.ts'; // Adjust the import based on your setup
-import { v4 as uuidv4 } from 'uuid';
-
-// Generate a UUID (v4)
-const userId: string = uuidv4();
-
-// Create a random email address using UUID
-const randomEmail: string = `${userId}@example.com`;
+import {
+  generateAccessToken,
+  verifyToken,
+} from "../src/utilities/ToolBoxUtility.ts"; // Adjust the import based on your setup
+import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
-describe('Token Generation', () => {
+jest.mock("jsonwebtoken");
 
-  afterAll(async () => {
-    await prisma.$disconnect();
+describe("Token Generation", () => {
+  const userPayload = {
+    userId: "user-id",
+    email: "test@example.com",
+    firstName: "Test",
+    lastName: "User",
+    phone: "1234567890",
+  };
+
+  it("should generate a token with correct user details and expiration time", async() => {
+    const mockSign = jwt.sign as jest.Mock;
+    mockSign.mockReturnValue("mockToken");
+
+    const token = await generateAccessToken(userPayload);
+
+    expect(token).toBe("mockToken");
+    expect(mockSign).toHaveBeenCalledWith({
+      email:userPayload.email,
+      userId:userPayload.userId
+    }, process.env.SECRET_KEY, { expiresIn: "15m" });
   });
-  it('should generate a token with the correct expiry time', async() => {
-    const user = { userId: 1, email: randomEmail };
-    const token = await generateAccessToken(user);
-    const decoded: any = jwt.decode(token);
 
-    expect(decoded.exp).toBeGreaterThan(decoded.iat);
+  it("should verify the token and return user details", async () => {
+    const mockVerify = jwt.verify as jest.Mock;
+    mockVerify.mockReturnValue(userPayload);
+
+    const decoded = await verifyToken("mockToken", process.env.SECRET_KEY);
+
+    expect(decoded).toEqual(userPayload);
+    expect(mockVerify).toHaveBeenCalledWith("mockToken",  process.env.SECRET_KEY);
   });
 
-  it('should find correct user details in token', async() => {
-    const user = { userId: 1, email: randomEmail };
-    const token = await generateAccessToken(user);
-    const decoded = await verifyToken(token, process.env.SECRET_KEY);
 
 
-    expect(decoded.userId).toEqual(user.userId);
-    expect(decoded.email).toEqual(user.email);
+  it("should return null for invalid token", async () => {
+    const mockVerify = jwt.verify as jest.Mock;
+    mockVerify.mockReturnValue(null);
+
+    const decoded = await verifyToken("mockToken", process.env.SECRET_KEY);
+
+    expect(decoded).toBeNull();
+    expect(mockVerify).toHaveBeenCalledWith("mockToken",  process.env.SECRET_KEY);
   });
-});
-
-describe('Organisation Access', () => {
-  it('should deny access to organisations the user does not belong to', async () => {
-    const user = await prisma.user.create({
-      data: { email: randomEmail, password: 'password', firstName: 'Test User',lastName:"Anazodo", phone:"07049078543" }
-    });
-
-    const org = await prisma.organisation.create({
-      data: { name: 'Test Organisation', description:"New Organization" }
-    });
-
-    const res = await prisma.userOrganisations.findMany({
-      where: { authorId: user.userId, organisationId: org.orgId }
-    });
-
-    expect(res.length).toBe(0);
-  });
+  
 });

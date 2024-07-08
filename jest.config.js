@@ -8,4 +8,5 @@ export default {
     '^.+\\.ts?$': 'ts-jest',
   },
   testMatch: ['**/tests/**/*.spec.ts'],
+  setupFilesAfterEnv: ['<rootDir>/singleton.ts']
 };
